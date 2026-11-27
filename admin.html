@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GOLD 2D - Admin</title>
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#111111">
+  <script>
+  (function(){
+    const c = document.createElement('canvas'); c.width = 192; c.height = 192;
+    const x = c.getContext('2d'); x.fillStyle = '#111'; x.fillRect(0,0,192,192);
+    x.beginPath(); x.arc(96,96,86,0,Math.PI*2); x.fillStyle = '#f5c542'; x.fill();
+    x.fillStyle = '#1f1400'; x.textAlign = 'center';
+    x.font = 'bold 34px sans-serif'; x.fillText('ADMIN', 96, 82);
+    x.font = 'bold 58px sans-serif'; x.fillText('2D', 96, 142);
+    const l = document.createElement('link'); l.rel = 'icon'; l.href = c.toDataURL();
+    document.head.appendChild(l);
+  })();
+  </script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+    body { background: #111; color: #fff; padding: 14px; max-width: 480px; margin: 0 auto; }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; background: #1c1912; border: 1px solid #8a6d1b; border-radius: 12px; padding: 12px 16px; margin-bottom: 14px; }
+    .top-bar h2 { font-size: 16px; color: #f5c542; }
+    .status-badge { background: #1e4620; color: #4cd964; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+    .section { background: #191919; border: 1px solid #333; border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+    .sec-title { font-size: 15px; font-weight: bold; color: #f5c542; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .dot { width: 10px; height: 10px; background: #ff3b30; border-radius: 50%; display: inline-block; }
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+    .row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 12px; color: #aaa; margin-bottom: 6px; }
+    .form-group input { width: 100%; background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; font-size: 14px; outline: none; }
+    .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 6px; }
+    .btn-gold { background: linear-gradient(90deg, #d4af37, #f5d061); color: #111; }
+    .btn-red { background: #d93829; color: #fff; margin-top: 10px; }
+    #toast-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #222; border: 1px solid #f5c542; color: #fff; padding: 10px 18px; border-radius: 20px; font-size: 13px; display: none; z-index: 999; }
+  </style>
+</head>
+<body>
+  <div class="top-bar"><h2>⚙️ GOLD 2D Admin</h2><span class="status-badge" id="conn-status">Connecting...</span></div>
+  <div class="section">
+    <div class="sec-title"><span class="dot"></span> Live နှင့် Stock ထိန်းချုပ်ရန်</div>
+    <div class="row-2">
+      <div class="form-group"><label>Live ဂဏန်း (ခုန်စေရန် -- ထားပါ)</label><input type="text" id="in-live" placeholder="--"></div>
+      <div class="form-group"><label>အချိန်/အခြေအနေ စာသား</label><input type="text" id="in-label" placeholder="Live ထွက်ရှိနေပါသည်"></div>
+    </div>
+    <div class="row-2">
+      <div class="form-group"><label>SET ကိန်းဂဏန်း</label><input type="text" id="in-set" placeholder="1,384.28"></div>
+      <div class="form-group"><label>VALUE ကိန်းဂဏန်း</label><input type="text" id="in-value" placeholder="42,510.48"></div>
+    </div>
+    <button class="btn btn-gold" onclick="updateLive()">🚀 Live အချက်အလက် တင်မည်</button>
+  </div>
+  <div class="section">
+    <div class="sec-title">🕒 ၆ ကြိမ် ထွက်စဉ်ဇယား တင်ရန်</div>
+    <div class="row-3">
+      <div class="form-group"><label>9:00 AM</label><input type="text" id="in-9am" placeholder="--"></div>
+      <div class="form-group"><label>11:00 AM</label><input type="text" id="in-11am" placeholder="--"></div>
+      <div class="form-group"><label>1:00 PM</label><input type="text" id="in-1pm" placeholder="--"></div>
+      <div class="form-group"><label>3:00 PM</label><input type="text" id="in-3pm" placeholder="--"></div>
+      <div class="form-group"><label>5:00 PM</label><input type="text" id="in-5pm" placeholder="--"></div>
+      <div class="form-group"><label>7:00 PM</label><input type="text" id="in-7pm" placeholder="--"></div>
+    </div>
+    <button class="btn btn-gold" onclick="updateGrid()">💾 ၆ ကြိမ်ဇယား သိမ်းဆည်းမည်</button>
+    <button class="btn btn-red" onclick="clearGrid()">🔄 ဇယားအသစ် ပြန်ရှင်းမည် (--)</button>
+  </div>
+  <div class="section">
+    <div class="sec-title">📅 History မှတ်တမ်း သိမ်းဆည်းရန်</div>
+    <div class="form-group" style="margin-bottom:10px;"><label>နေ့စွဲ ရွေးချယ်ပါ</label><input type="date" id="in-hist-date"></div>
+    <button class="btn btn-gold" onclick="saveToHistory()">📥 ယနေ့ဇယားကို History ထဲ သိမ်းမည်</button>
+  </div>
+  <div id="toast-msg"></div>
+  <script>
+    const p1 = "gold-2d-74098-default-rtdb";
+    const p2 = "firebaseio";
+    const DB_URL = "https://" + p1 + "." + p2 + ".com";
+
+    function showToast(msg) {
+      const t = document.getElementById('toast-msg'); t.innerText = msg; t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 2500);
+    }
+    document.getElementById('in-hist-date').valueAsDate = new Date();
+
+    function setConnected(ok) {
+      const st = document.getElementById('conn-status');
+      st.innerText = ok ? 'Connected' : 'Error';
+      st.style.background = ok ? '#1e4620' : '#461e1e';
+      st.style.color = ok ? '#4cd964' : '#ff3b30';
+    }
+
+    fetch(DB_URL + "/results.json").then(r => r.json()).then(d => {
+      setConnected(true); if (!d) return;
+      document.getElementById('in-live').value = d['live'] || '';
+      document.getElementById('in-label').value = d['live_label'] || '';
+      document.getElementById('in-set').value = d['set'] || '';
+      document.getElementById('in-value').value = d['value'] || '';
+      ['9am','11am','1pm','3pm','5pm','7pm'].forEach(k => { document.getElementById('in-' + k).value = d[k] || ''; });
+    }).catch(() => setConnected(false));
+
+    function patchResults(payload, successMsg) {
+      fetch(DB_URL + "/results.json", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) })
+      .then(r => r.json()).then(() => { setConnected(true); showToast(successMsg); }).catch(() => alert("ချိတ်ဆက်မှု စစ်ဆေးပါ!"));
+    }
+function updateLive() {
+  const liveVal = document.getElementById('in-live').value.trim() || '--';
+  let setVal = document.getElementById('in-set').value.trim();
+  let valVal = document.getElementById('in-value').value.trim();
+
+  // Live ဂဏန်း (၂ လုံး) ရိုက်ထည့်ထားပြီး SET/VALUE မထည့်ထားပါက Live ဂဏန်းနှင့် ကိုက်ညီအောင် အလိုအလျောက် ပြောင်းပေးမည်
+  if (liveVal.length === 2 && !isNaN(liveVal)) {
+const d1 = liveVal.charAt(0);
+const d2 = liveVal.charAt(1);
+
+
+    if (!setVal || setVal === '----.--') {
+      const randDec = Math.floor(Math.random() * 9);
+      setVal = "1,384." + randDec + d1;
+      document.getElementById('in-set').value = setVal;
+    }
+    if (!valVal || valVal === '-----.--') {
+      const randCent = (Math.floor(Math.random() * 89) + 10);
+      valVal = "42,51" + d2 + "." + randCent;
+      document.getElementById('in-value').value = valVal;
+    }
+  }
+
+  patchResults({
+    live: liveVal,
+    live_label: document.getElementById('in-label').value || 'Live ထွက်ရှိနေပါသည်',
+    set: setVal || '----.--',
+    value: valVal || '-----.--',
+    updated_at: Date.now()
+  }, "✅ Live နှင့် SET/VALUE ကိုက်ညီစွာ တင်ပြီးပါပြီ!");
+}
+
+
+
+    function updateGrid() {
+      patchResults({
+        '9am': document.getElementById('in-9am').value || '--', '11am': document.getElementById('in-11am').value || '--',
+        '1pm': document.getElementById('in-1pm').value || '--', '3pm': document.getElementById('in-3pm').value || '--',
+        '5pm': document.getElementById('in-5pm').value || '--', '7pm': document.getElementById('in-7pm').value || '--'
+      }, "✅ ၆ ကြိမ်ဇယား သိမ်းဆည်းပြီးပါပြီ!");
+    }
+
+    function clearGrid() {
+      if (!confirm("ဇယားဂဏန်းအားလုံးကို '--' အဖြစ် ပြန်ရှင်းမှာ သေချာပါသလား?")) return;
+      ['9am','11am','1pm','3pm','5pm','7pm'].forEach(k => { document.getElementById('in-' + k).value = '--'; });
+      updateGrid();
+    }
+
+    function saveToHistory() {
+      const dateVal = document.getElementById('in-hist-date').value;
+      if (!dateVal) return alert("နေ့စွဲ ရွေးချယ်ပေးပါ!");
+      fetch(DB_URL + "/history/" + dateVal + ".json", {
+        method: "PUT", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          '9am': document.getElementById('in-9am').value || '--', '11am': document.getElementById('in-11am').value || '--',
+          '1pm': document.getElementById('in-1pm').value || '--', '3pm': document.getElementById('in-3pm').value || '--',
+          '5pm': document.getElementById('in-5pm').value || '--', '7pm': document.getElementById('in-7pm').value || '--'
+        })
+      }).then(() => showToast("✅ History မှတ်တမ်း သိမ်းဆည်းပြီးပါပြီ!"));
+    }
+  </script>
+</body>
+</html>

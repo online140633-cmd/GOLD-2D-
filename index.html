@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GOLD 2D</title>
+    <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0f0f0f">
+<script>
+(function(){
+  const c = document.createElement('canvas');
+  c.width = 192; c.height = 192;
+  const x = c.getContext('2d');
+  x.fillStyle = '#0f0f0f'; x.fillRect(0,0,192,192);
+  x.beginPath(); x.arc(96,96,86,0,Math.PI*2);
+  x.fillStyle = '#f5c542'; x.fill();
+  x.lineWidth = 6; x.strokeStyle = '#ffe875'; x.stroke();
+  x.fillStyle = '#1f1400'; x.textAlign = 'center';
+  x.font = 'bold 34px sans-serif'; x.fillText('GOLD', 96, 82);
+  x.font = 'bold 62px sans-serif'; x.fillText('2D', 96, 142);
+  const l = document.createElement('link');
+  l.rel = 'icon'; l.href = c.toDataURL();
+  document.head.appendChild(l);
+})();
+</script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+    body { background: radial-gradient(circle at top, #1d1a12 0%, #0a0a0a 100%); color: #fff; padding: 14px; max-width: 480px; margin: 0 auto; min-height: 100vh; }
+    
+    /* 3D Header */
+    .header { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(145deg, #242016, #14120c); border: 1px solid #a68224; border-radius: 14px; padding: 10px 14px; margin-bottom: 16px; box-shadow: 0 6px 15px rgba(0,0,0,0.7), inset 0 1px 1px rgba(255,223,115,0.25); }
+    .logo-wrap { display: flex; align-items: center; gap: 10px; }
+    .logo-coin { width: 42px; height: 42px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #fff3a1, #f5c542 55%, #8a5e00 100%); border: 2px solid #ffe875; box-shadow: 0 4px 10px rgba(0,0,0,0.6), 0 0 12px rgba(245,197,66,0.5); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #1f1400; font-weight: 900; line-height: 1.05; text-align: center; }
+    .logo-coin small { font-size: 8px; letter-spacing: 0.5px; display: block; }
+    .logo-coin b { font-size: 13px; display: block; }
+    .logo-title { font-weight: 900; font-size: 19px; color: #ffd700; text-shadow: 0 2px 4px rgba(0,0,0,0.8); letter-spacing: 0.5px; }
+    .hist-btn { background: linear-gradient(180deg, #38301c, #1f1a0e); border: 1px solid #c99e24; color: #ffe066; padding: 8px 14px; border-radius: 10px; font-size: 13px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2); }
+    .hist-btn:active { transform: translateY(2px); }
+
+    /* 3D Live Card */
+    .live-card { background: linear-gradient(160deg, #2b2310 0%, #14110a 60%, #0d0b07 100%); border: 1.5px solid #d4af37; border-radius: 18px; padding: 20px 16px; text-align: center; margin-bottom: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.85), inset 0 1px 2px rgba(255,225,120,0.35); }
+    .live-badge { display: inline-flex; align-items: center; gap: 6px; background: #1a1509; border: 1px solid #a68224; padding: 5px 14px; border-radius: 20px; font-size: 11px; color: #ffd700; font-weight: bold; box-shadow: inset 0 2px 4px rgba(0,0,0,0.8); }
+    .dot { width: 8px; height: 8px; background: #ff3b30; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #ff3b30; animation: blink 1.2s infinite; }
+    @keyframes blink { 50% { opacity: 0.3; } }
+    .live-num { font-size: 64px; font-weight: 900; color: #ffd700; margin: 12px 0 6px; letter-spacing: 5px; text-shadow: 0 4px 0 #7a5800, 0 8px 18px rgba(0,0,0,0.9); transition: transform 0.25s ease; }
+    .tick-pop { transform: scale(1.06); color: #fff5b8; }
+    .live-sub { font-size: 13px; color: #d6c89e; margin-bottom: 16px; }
+    .stock-box { display: flex; background: #0d0d0d; border: 1px solid #3a321c; border-radius: 12px; padding: 10px; box-shadow: inset 0 3px 8px rgba(0,0,0,0.9); }
+    .stock-col { flex: 1; text-align: center; }
+    .stock-col:first-child { border-right: 1px solid #2e2816; }
+    .stock-lbl { font-size: 11px; color: #aaa; margin-bottom: 4px; font-weight: bold; }
+    .stock-val { font-size: 17px; font-weight: bold; color: #4cd964; text-shadow: 0 0 8px rgba(76,217,100,0.3); }
+
+    /* 3D 6-Times Grid */
+    .grid-wrap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+    .grid-card { background: linear-gradient(145deg, #212121, #131313); border: 1px solid #333; border-top: 2.5px solid #d4af37; border-radius: 14px; padding: 12px 8px; text-align: center; box-shadow: 0 6px 12px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.1); }
+    .r-time { font-size: 12px; color: #f5c542; margin-bottom: 6px; font-weight: bold; }
+    .r-val { font-size: 22px; font-weight: 900; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.9); }
+
+    /* 3D Notice Box */
+    .holiday-box { background: linear-gradient(145deg, #361212, #1f0909); border: 1px solid #c93434; border-radius: 16px; padding: 14px; text-align: center; margin-bottom: 16px; box-shadow: 0 8px 18px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,150,150,0.2); }
+    .h-badge { display: inline-flex; align-items: center; gap: 6px; background: #260b0b; border: 1px solid #9e2828; padding: 4px 12px; border-radius: 20px; font-size: 11px; color: #ff9e9e; margin-bottom: 8px; }
+    .h-my { font-size: 16px; font-weight: bold; color: #ffd700; margin-bottom: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+    .h-en { font-size: 12px; color: #ddd; }
+
+    /* 3D History Page (ဂဏန်းများ ရှင်းလင်းတောက်ပစွာ မြင်ရစေရန်) */
+    .hist-page { display: none; }
+    .h-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; background: #1a1812; padding: 10px 12px; border-radius: 12px; border: 1px solid #6b5314; }
+    .h-title { font-size: 15px; font-weight: bold; color: #ffd700; }
+    .h-refresh { background: linear-gradient(180deg, #333, #1c1c1c); border: 1px solid #8a6d1b; color: #ffd700; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
+    .h-card { background: linear-gradient(145deg, #221f17, #141310); border: 1px solid #8a6d1b; border-left: 4px solid #ffd700; border-radius: 14px; padding: 14px; margin-bottom: 12px; box-shadow: 0 8px 18px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,230,130,0.15); }
+    .h-date { font-size: 14px; color: #ffd700; margin-bottom: 10px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+    .h-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .h-cell { background: linear-gradient(180deg, #171717, #0d0d0d); border: 1px solid #3a321c; padding: 8px 4px; border-radius: 10px; text-align: center; font-size: 18px; font-weight: 900; color: #ffd700; text-shadow: 0 2px 4px rgba(0,0,0,0.9); box-shadow: inset 0 2px 5px rgba(0,0,0,0.8); }
+    .h-cell span { display: block; font-size: 11px; color: #e0c878; font-weight: bold; margin-bottom: 3px; }
+  </style>
+
+</head>
+<body>
+  <div class="header">
+    <div class="logo-wrap">
+      <div class="logo-coin"><small>GOLD</small><b>2D</b></div>
+      <span class="logo-title">GOLD 2D</span>
+    </div>
+    <button class="hist-btn" onclick="toggleHistory()" id="nav-btn">📅 History</button>
+  </div>
+
+  <div id="main-page">
+    <div class="live-card">
+      <div class="live-badge"><span class="dot"></span> LIVE RESULT</div>
+      <div class="live-num" id="live-result">--</div>
+      <div class="live-sub" id="live-time-info">Live ထွက်ရှိနေပါသည်</div>
+      <div class="stock-box">
+        <div class="stock-col"><div class="stock-lbl">SET</div><div class="stock-val" id="stock-set">1,384.28</div></div>
+        <div class="stock-col"><div class="stock-lbl">VALUE</div><div class="stock-val" id="stock-value">42,510.48</div></div>
+      </div>
+    </div>
+    <div class="grid-wrap">
+      <div class="grid-card"><div class="r-time">9:00 AM</div><div class="r-val" id="res-9am">--</div></div>
+      <div class="grid-card"><div class="r-time">11:00 AM</div><div class="r-val" id="res-11am">--</div></div>
+      <div class="grid-card"><div class="r-time">1:00 PM</div><div class="r-val" id="res-1pm">--</div></div>
+      <div class="grid-card"><div class="r-time">3:00 PM</div><div class="r-val" id="res-3pm">--</div></div>
+      <div class="grid-card"><div class="r-time">5:00 PM</div><div class="r-val" id="res-5pm">--</div></div>
+      <div class="grid-card"><div class="r-time">7:00 PM</div><div class="r-val" id="res-7pm">--</div></div>
+    </div>
+    <div class="holiday-box">
+      <div class="h-badge"><span class="dot"></span> LIVE NOTICE • ပိတ်ရက်အသိပေးချက်</div>
+      <div class="h-my">အင်္ဂါနေ့တိုင်း ပိတ်ရက်ဖြစ်ပါသည်</div>
+      <div class="h-en">Closed Every Tuesday (Market Holiday)</div>
+    </div>
+  </div>
+  <div class="hist-page" id="hist-page">
+    <div class="h-header-row">
+      <div class="h-title">📅 ထွက်စဉ်မှတ်တမ်းများ (History)</div>
+      <button class="h-refresh" onclick="loadHistory()">↻ ပြန်စစ်ရန်</button>
+    </div>
+    <div id="history-list"></div>
+  </div>
+
+<script>
+const p1 = "gold-2d-74098-default-rtdb";
+const p2 = "firebaseio";
+const DB_URL = "https://" + p1 + "." + p2 + ".com";
+
+let isAdminLocked = false;
+let last7pmResult = null;
+let simSet = 1384.28;
+let simVal = 42510.48;
+
+function isMarketOpen() {
+  const now = new Date();
+  const hr = now.getHours(); // 0 မှ 23 (7:00 AM = 7, 7:00 PM = 19)
+  return hr >= 7 && hr < 19;
+}
+
+function runTicker() {
+  if (isAdminLocked) return;
+
+  // ည 7:00 PM မှ နောက်ရက် မနက် 7:00 AM အတွင်း ဂဏန်းခုန်ခြင်း ရပ်ထားမည်
+  if (!isMarketOpen()) {
+    document.getElementById('live-time-info').innerText = "ပိတ်ချိန် (မနက် 7:00 AM တွင် ပြန်ဖွင့်ပါမည်)";
+    if (last7pmResult && last7pmResult !== '--') {
+      document.getElementById('live-result').innerText = last7pmResult;
+    }
+    return;
+  }
+
+  simSet += (Math.random() - 0.49) * 0.25;
+  if (simSet < 1310) simSet = 1350.15;
+  simVal += Math.random() * 2.15;
+
+  const setStr = simSet.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const valStr = simVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  const d1 = setStr.slice(-1);
+  const d2 = Math.floor(simVal).toString().slice(-1);
+const el = document.getElementById('live-result');
+el.innerText = (d1 + d2).slice(0, 2);
+
+
+  el.classList.add('tick-pop');
+  setTimeout(() => el.classList.remove('tick-pop'), 250);
+
+  document.getElementById('stock-set').innerText = setStr;
+  document.getElementById('stock-value').innerText = valStr;
+  document.getElementById('live-time-info').innerText = "Live ထွက်ရှိနေပါသည် • " + new Date().toLocaleTimeString();
+}
+
+function loadFirebaseData() {
+  fetch(DB_URL + "/results.json")
+    .then(r => r.json())
+    .then(d => {
+      if (!d) return;
+      last7pmResult = d['7pm'] || null;
+const updatedTime = d['updated_at'] || 0;
+const isWithinOneMin = (Date.now() - updatedTime) < 60000;
+if (isWithinOneMin && d['live'] && d['live'] !== '--' && d['live'].trim() !== '') {
+
+        isAdminLocked = true;
+        document.getElementById('live-result').innerText = d['live'];
+        document.getElementById('live-time-info').innerText = d['live_label'] || 'Live ထွက်ရှိနေပါသည်';
+        if (d['set'] && d['set'] !== '----.--') document.getElementById('stock-set').innerText = d['set'];
+        if (d['value'] && d['value'] !== '-----.--') document.getElementById('stock-value').innerText = d['value'];
+      } else {
+        isAdminLocked = false;
+      }
+
+      ['9am','11am','1pm','3pm','5pm','7pm'].forEach(k => {
+        document.getElementById('res-' + k).innerText = d[k] || '--';
+      });
+    })
+    .catch(() => {});
+}
+
+function loadHistory() {
+  const list = document.getElementById('history-list');
+  list.innerHTML = '<p style="font-size:13px;color:#888;text-align:center;padding:20px;">မှတ်တမ်းများ ဆွဲယူနေပါသည်...</p>';
+  fetch(DB_URL + "/history.json")
+    .then(r => r.json())
+    .then(data => {
+      if (!data || typeof data !== 'object') {
+        list.innerHTML = '<p style="font-size:13px;color:#888;text-align:center;padding:20px;">မှတ်တမ်း မရှိသေးပါ</p>';
+        return;
+      }
+      const keys = Object.keys(data).sort().reverse().slice(0, 30);
+      list.innerHTML = '';
+      keys.forEach(date => {
+        const i = data[date] || {};
+        list.innerHTML += '<div class="h-card"><div class="h-date">📅 ' + date + '</div><div class="h-grid">' +
+          '<div class="h-cell"><span>9:00 AM</span>' + (i['9am']||'--') + '</div>' +
+          '<div class="h-cell"><span>11:00 AM</span>' + (i['11am']||'--') + '</div>' +
+          '<div class="h-cell"><span>1:00 PM</span>' + (i['1pm']||'--') + '</div>' +
+          '<div class="h-cell"><span>3:00 PM</span>' + (i['3pm']||'--') + '</div>' +
+          '<div class="h-cell"><span>5:00 PM</span>' + (i['5pm']||'--') + '</div>' +
+          '<div class="h-cell"><span>7:00 PM</span>' + (i['7pm']||'--') + '</div></div></div>';
+      });
+    })
+    .catch(() => {
+      list.innerHTML = '<p style="font-size:13px;color:#ff6b6b;text-align:center;padding:20px;">ချိတ်ဆက်မှု မအောင်မြင်ပါ</p>';
+    });
+}
+
+runTicker();
+loadFirebaseData();
+setInterval(runTicker, 3500);
+setInterval(loadFirebaseData, 4000);
+
+let showHist = false;
+function toggleHistory() {
+  showHist = !showHist;
+  document.getElementById('main-page').style.display = showHist ? 'none' : 'block';
+  document.getElementById('hist-page').style.display = showHist ? 'block' : 'none';
+  document.getElementById('nav-btn').innerText = showHist ? '🏠 Home' : '📅 History';
+  if (showHist) loadHistory();
+}
+</script>
+</body>
+</html>
